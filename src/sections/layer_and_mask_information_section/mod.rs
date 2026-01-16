@@ -137,6 +137,7 @@ impl LayerAndMaskInformationSection {
             group_id: 0,
             parent_group_id: 0,
         }];
+        let mut record_stack: Vec<LayerRecord> = vec![];
 
         // Viewed group counter
         let mut already_viewed = 0;
@@ -153,17 +154,19 @@ impl LayerAndMaskInformationSection {
 
                     let frame = Frame {
                         start_idx: layers.len(),
-                        name: layer_record.name,
+                        name: layer_record.name.clone(),
                         group_id: already_viewed,
                         parent_group_id: current_group_id,
                     };
 
                     stack.push(frame);
+                    record_stack.push(layer_record);
                 }
 
                 // close the folder
                 Some(GroupDivider::BoundingSection) => {
                     let frame = stack.pop().unwrap();
+                    let layer_record = record_stack.pop().unwrap();
 
                     let range = Range {
                         start: frame.start_idx,
